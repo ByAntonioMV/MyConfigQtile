@@ -64,10 +64,20 @@ keys = [
     Key([mod], "p", lazy.spawn("dmenu_run"), desc="Abrir lanzador de aplicaciones dmenu"),
     Key([mod, "control"], "l", lazy.spawn("systemctl suspend"), desc="Suspender el sistema"),
 
-
-    
 ]
 
+# Audio keys
+keys.extend([
+    Key([], "XF86AudioRaiseVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%"), desc="Subir volumen"),
+    Key([], "XF86AudioLowerVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%"), desc="Bajar volumen"),
+    Key([], "XF86AudioMute", lazy.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle"), desc="Mute"),
+])
+
+# Brillo con xbacklight
+keys.extend([
+    Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 10"), desc="Subir brillo"),
+    Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 10"), desc="Bajar brillo"),
+])
 
 for vt in range(1, 8):
     keys.append(
@@ -78,7 +88,6 @@ for vt in range(1, 8):
             desc=f"Switch to VT{vt}",
         )
     )
-
 
 groups = [
     Group("1", label=""),  # Nevegador
@@ -117,7 +126,7 @@ layouts = [
 widget_defaults = dict(
     font="sans",
     fontsize=12,
-    padding=3,
+    padding= 3,
 )
 extension_defaults = widget_defaults.copy()
 
