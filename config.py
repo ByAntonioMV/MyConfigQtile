@@ -62,6 +62,7 @@ keys = [
     Key([mod], "w", lazy.window.kill(), desc="Cerrar la ventana activa"),
     Key([mod], "p", lazy.spawn("dmenu_run"), desc="Abrir lanzador de aplicaciones dmenu"),
     Key([mod, "control"], "l", lazy.spawn("systemctl suspend"), desc="Suspender el sistema"),
+    Key([mod, "control"], "q", lazy.shutdown(), desc="Cerrar sesión"),
 
 ]
 
