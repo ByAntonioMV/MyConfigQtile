@@ -24,11 +24,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-from libqtile import bar, layout, qtile, widget
+from libqtile import bar, layout, qtile, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
-
+import os, subprocess
 
 mod = "mod4"
 terminal = "alacritty"
@@ -130,53 +129,111 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
+def get_ssid():
+    try:
+        result = subprocess.check_output(["iwgetid", "-r"]).decode("utf-8").strip()
+        return f"   {result}" if result else "睊 No conectado"
+    except Exception:
+        return "睊 Error"
+
 screens = [
     Screen(
         top=bar.Bar(
             [
+                widget.Spacer(length=15),
+                
+                # 🧩 GROUPBOX CENTRADO
                 widget.GroupBox(
                     font="FiraCode Nerd Font",
-                    fontsize=18,              # Reduce un poco para elegancia
+                    fontsize=18,
                     padding_y=6,
                     padding_x=12,
-                    highlight_method="line",  # Línea inferior en vez de bloque
+                    highlight_method="line",
                     this_current_screen_border="#ffffff",
-                    inactive="#666666",       # Color de grupos inactivos
-                    active="#ffffff",         # Color de grupos activos
-                    highlight_color=["#C0C0C0", "#222222"],  # Fondo al resaltar (se mantiene neutro)
+                    inactive="#666666",
+                    active="#ffffff",
+                    highlight_color=["#C0C0C0", "#222222"],
                     disable_drag=True,
                     equal=True,
                     rounded=False,
                     borderwidth=2,
                     margin_y=4, 
                 ),
-                widget.Prompt(),    
-                widget.WindowName(),  
-                widget.Systray(), 
 
-                widget.Net(
-                    interface="wlan0",
-                    format="Red: ↓{down} ↑{up}",
-                    prefix="M",
+                widget.Prompt(
+                    prompt="> ",
+                    font="FiraCode Nerd Font",
+                    fontsize=12,
+                    padding=6,         # Más padding para indentación
+                    foreground="#aaaaaa",
+                    cursor_color="#888888",
                 ),
+
+                widget.WindowName(
+                    font="FiraCode Nerd Font",
+                    fontsize=12,
+                    padding=12,         # Igual aquí para que coincida
+                    foreground="#bbbbbb",
+                    format="{name}",
+                    max_chars=40,
+                    markup=True,
+                ),
+
+                widget.Systray(
+                    padding=4,
+                    icon_size=18,
+                ),
+
+                widget.Spacer(length=bar.STRETCH),
+                
+                widget.Sep(linewidth=1, padding=10, foreground="#444444"),
+                widget.GenPollText(
+                    update_interval=10,
+                    func=get_ssid,
+                    fontsize=14,
+                    padding=8,
+                    foreground="#bbbbbb"
+                ),
+                widget.Sep(linewidth=1, padding=10, foreground="#444444"),
 
                 widget.Battery(
-                    format="Batería: {percent:2.0%}",
+                    format="  {percent:2.0%}",
                     show_short_text=False,
+                    fontsize=14,
+                    padding=8,
+                    foreground="#bbbbbb"
                 ),
+                widget.Sep(linewidth=1, padding=10, foreground="#444444"),
 
                 widget.Volume(
-                    emoji=False,  
-                    format="Volumen: {percent:2.0%}"
+                    format="  {percent:2.0%}",
+                    emoji=False,
+                    fontsize=14,
+                    padding=8,
+                    foreground="#bbbbbb"
                 ),
+                widget.Sep(linewidth=1, padding=10, foreground="#444444"),
 
-                widget.Clock(format="Fecha: %d/%m/%Y  Hora: %H:%M"),  
+                widget.Clock(
+                    format="  %d/%m |   %H:%M",
+                    fontsize=14,
+                    padding=8,
+                    foreground="#bbbbbb"
+                ),
+                widget.Sep(linewidth=1, padding=10, foreground="#444444"),
 
-                widget.CurrentLayout(format="Diseño: {name}"),
-            ],  
-            32, 
-            background="#333241",
-            margin=[5, 5, 5, 5],
+                widget.CurrentLayout(
+                    format="  {name}",
+                    fontsize=14,
+                    padding=8,
+                    foreground="#bbbbbb"
+                ),
+                
+                widget.Spacer(length=15),
+            ],
+            40, 
+            background="#000000",
+            margin=[10, 5, 10, 5],
         ),
     ),
 ]
@@ -213,3 +270,7 @@ wl_input_rules = None
 wl_xcursor_theme = None
 wl_xcursor_size = 24
 wmname = "LG3D"
+
+def autostart():
+    home = os.path.expanduser('~/.config/qtile/autostart.sh')
+    subprocess.Popen([home])
